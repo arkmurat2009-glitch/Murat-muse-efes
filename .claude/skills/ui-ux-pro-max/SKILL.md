@@ -1,6 +1,6 @@
 ---
 name: ui-ux-pro-max
-description: Profesyonel UI/UX tasarım ve arayüz geliştirme rehberi. Arayüz, sayfa, bileşen, form, tasarım sistemi veya kullanılabilirlik/erişilebilirlik incelemesi istendiğinde kullan. Türkiye mevzuatına (KVKK, 5378, 6502, 6563) uyumu kontrol eder.
+description: Profesyonel UI/UX tasarım ve arayüz geliştirme rehberi. Arayüz, sayfa, bileşen, form, tasarım sistemi veya kullanılabilirlik/erişilebilirlik incelemesi istendiğinde kullan. Türkiye mevzuatına (KVKK, 5378, 6502, 6563 ve dijital erişilebilirlik genelgesi) uyumu kontrol eder.
 ---
 
 # UI/UX Pro Max
@@ -75,31 +75,33 @@ Arayüz tasarlarken, kodlarken veya incelerken bu rehberi uygula. Önce hedef ku
 
 ## 9. Türkiye mevzuatı uyum kontrolü
 
-Aşağıdakiler genel tasarım kontrol listesidir; hukuki görüş değildir. Kapsamı belli olan projelerde güncel metni ve yetkili hukuk müşavirini esas al, mevzuatın değişmiş olabileceğini unutma.
+Aşağıdakiler genel tasarım kontrol listesidir; hukuki görüş değildir. Her madde için durum etiketi vardır: **[Doğrulandı]** birden çok ikincil kaynakta teyit edildi, **[Kısmen]** özü teyit edildi ayrıntısı edilmedi, **[Doğrulanamadı]** resmî metne bakılmadan kesin kabul edilmemeli. Doğrulama 2026-10-25'te yapıldı; resmî siteler (mevzuat.gov.tr, kvkk.gov.tr, Resmî Gazete) erişilemediği için resmî metin okunmadı. Kapsamı belli projelerde güncel resmî metni ve hukuk müşavirini esas al.
 
-**Kişisel veriler: 6698 sayılı KVKK ve ilgili yönetmelikler**
+**Kişisel veriler: 6698 sayılı KVKK ve ilgili düzenlemeler**
 - Aydınlatma metni, veri toplanan her noktada (form, kayıt, çerez) erişilebilir ve anlaşılır olsun.
-- Açık rıza: ayrı, işaretlenmemiş (ön seçimsiz) onay kutusu; hizmetin şartı olarak dayatılmasın, geri çekilmesi kolay olsun.
+- Açık rıza: ayrı, ön seçimsiz, hizmetin şartı olarak dayatılmayan, geri çekilmesi kolay onay. "Siteyi kullanarak kabul etmiş sayılırsınız" ve genel "kabul ediyorum" ifadeleri açık rıza sayılmaz. [Kısmen: KVKK çerez rehberi özetlerine dayanır]
 - Veri minimizasyonu: yalnızca amaç için gerekli alanları iste.
-- Çerezler: zorunlu olmayan çerezler için kullanıcı tercihine göre (reddet/kabul et eşit görünürlükte) onay al; Kişisel Verileri Koruma Kurumu'nun çerez rehberi ve ilgili kurul kararlarına bak. Analitik/reklam betikleri onaydan önce çalışmasın.
-- Yurt dışına aktarım (örn. yabancı CDN, analitik, harita, yazı tipi servisleri) için KVKK m.9 şartlarını kontrol et.
-- İlgili kişi başvurusu (m.11) için kolay bulunur bir kanal sağla.
-- Özel nitelikli veri (sağlık, biyometri vb.) arayüzde ayrıca korunsun ve gereksizse toplanmasın.
+- Çerezler: Kurum'un Çerez Uygulamaları Hakkında Rehberi 2022'de yayımlandı, Temmuz 2025'te iyi/kötü uygulama örnekleriyle güncellendi. Analitik, reklam ve kişiselleştirme çerezleri için açık rıza gerekir, onaydan önce çalışmasın; oturum, sepet, güvenlik gibi kesinlikle gerekli çerezler kapsam dışıdır. [Kısmen] "Reddet" düğmesinin "Kabul et" ile aynı görünürlükte olması zorunluluğu **doğrulanamadı**; yine de iyi uygulama olarak eşit görünürlük sağla ve 2025 rehberindeki örneklere bak.
+- Yurt dışı aktarım (yabancı CDN, analitik, harita, yazı tipi, sohbet botu): KVKK m.9, 7499 sayılı Kanun m.34 ile değişti (RG 12.03.2024, 32487; yürürlük 01.06.2024). Aktarım yönetmeliği RG 10.07.2024, 32598. Kurum'un Yurt Dışına Aktarım Rehberi 02.01.2025'te yayımlandı. Eski açık rızaya dayalı aktarımlar için geçiş 01.09.2024'te bitti. [Doğrulandı] Yeterlilik kararı listesinin güncel durumunu Kurum'dan kontrol et.
+- İlgili kişi başvurusu (m.11) için kolay bulunur bir kanal sağla. [Doğrulanamadı: madde numarası bu turda kontrol edilmedi]
+- Özel nitelikli veriyi gereksizse toplama.
 
-**Erişilebilirlik: 5378 sayılı Engelliler Hakkında Kanun ve ilgili düzenlemeler**
-- Kamu kurumları ve kanunda sayılan sunucular için dijital erişilebilirlik yükümlülüğü vardır; ölçüt olarak WCAG 2.1 AA (Avrupa'daki EN 301 549 ile uyumlu) alınmalıdır. Ücretsiz/özel projelerde de iyi uygulama olarak hedefle.
+**Dijital erişilebilirlik**
+- 5378 sayılı Engelliler Hakkında Kanun m.7: bilgilendirme hizmetleri ile bilgi ve iletişim teknolojilerinin engelliler için erişilebilir olması ilkesini koyar. [Doğrulandı] Bu madde web siteleri için ayrıntılı teknik standart veya yaptırım içermez.
+- Web sitesi ve mobil uygulama erişilebilirliği için Cumhurbaşkanlığı'nın **2025/10 sayılı Genelgesi** (Haziran 2025) bildirilmektedir; kamu kurumları, belediyeler, üniversiteler ve bazı özel sektör kuruluşları (banka, e-ticaret vb.) anılmakta, süreler olarak kamu için bir yıl, e-ticaret için iki yıl aktarılmaktadır. Genelge doğrudan yaptırım öngörmemekte, denetim ve kamu kaynağı kullanımında ölçüt olabilmektedir. [Kısmen: yalnızca hukuk bürosu ve haber özetleri; kapsam, süre ve standart sürümü (WCAG 2.1 mi 2.2 mi) kaynaklarda çelişiyor, resmî metinden teyit et]
+- Karar verilmemişse WCAG 2.2 AA'yı hedefle; 2.1 AA'yı da karşılar.
 
 **Tüketici ve e-ticaret: 6502 sayılı Kanun, Mesafeli Sözleşmeler Yönetmeliği, 6563 sayılı Kanun**
-- Satın alma akışında ön bilgilendirme (fiyat vergiler dahil, teslimat, cayma hakkı) sipariş öncesi görünsün.
-- Ödeme düğmesi açık ödeme yükümlülüğünü belirtsin (örn. "Siparişi onayla ve öde").
-- Önceden işaretli ek ürün/hizmet ve gizli ücret ("karanlık desenler") kullanma; sahte aciliyet/stok baskısı yapma.
-- Cayma hakkı ve iletişim bilgileri kolay bulunur olsun; satıcı/hizmet sağlayıcı kimliği ve MERSİS/vergi bilgileri görünsün.
-- Ticari elektronik ileti (e-posta, SMS, arama) için önceden onay gerekir (İYS); onay kutusu ön seçimsiz ve ayrı olsun, her iletide ret yolu bulunsun.
+- Mesafeli sözleşmelerde ön bilgilendirme ve 14 günlük gerekçesiz cayma hakkı: 6502 m.48 ve Mesafeli Sözleşmeler Yönetmeliği. [Doğrulandı] İstisnalar yönetmelikte sayılıdır, ürününe göre kontrol et.
+- Yönetmelik m.8/1: satıcı/sağlayıcı (2022 değişikliğiyle aracı hizmet sağlayıcı da, RG 23.08.2022) siparişi onaylamadan hemen önce siparişin ödeme yükümlülüğü doğurduğunu açık ve anlaşılır biçimde bildirmelidir; aksi hâlde tüketici siparişle bağlı olmaz. [Doğrulandı] Düğme metni için resmî bir kalıp **bulunmadı**; "Siparişi onayla ve öde" gibi ifade ticari rehberlerin önerisidir. Bilgilendirmenin fiyat (vergiler dahil), teslimat bedeli, ödeme ve cayma koşullarını ödeme öncesinde ayrıca ve belirgin göstermesi gerekir. [Kısmen] 2024 değişikliğine ait bazı hükümlerin 01.01.2026'da uygulanmaya başladığı bildirildi; hangi hükümler olduğunu konsolide metinden kontrol et.
+- Önceden işaretli ek ürün/hizmet ve gizli ücret ("karanlık desenler") kullanma. Bu ilke genel tüketici hukuku ve ön bilgilendirme yükümlülüklerinden çıkarılır; ayrı bir "karanlık desen" maddesi **doğrulanmadı**.
+- Satıcı kimliği, iletişim bilgileri ve vergi/MERSİS bilgilerini göster. [Doğrulanamadı: zorunlu alan listesi için 6563 ve ilgili yönetmeliğe bak]
+- Ticari elektronik ileti (e-posta, SMS, arama) için önceden onay gerekir; onay İYS üzerinden veya yazılı/elektronik alınır ve alıcı gerekçesiz ret hakkına sahiptir; ret, bildirimin yapıldığı kanalın onayını geçersiz kılar. Kaynak: Ticari İletişim ve Ticari Elektronik İletiler Hakkında Yönetmelik ve İYS tebliği. [Doğrulandı] Kanun madde numarası (m.6) bu turda **doğrulanamadı**; atıf yapacaksan numarayı resmî metinden al.
 
 **Dil**
-- Tüketiciye yönelik bilgilendirme ve sözleşme metinleri Türkçe sunulmalıdır; çok dilli arayüzde Türkçe sürümü eksik bırakma.
+- Tüketiciye yönelik bilgilendirmeyi Türkçe sun. [Doğrulanamadı: dayanak madde bu turda bulunamadı]
 
-**Yapay zekâ/üçüncü taraf bileşenleri:** Kullanıcı verisi gönderen bileşenleri (sohbet botu, analitik, harita) KVKK ve aydınlatma metnine ekle.
+**Üçüncü taraf bileşenler:** Kullanıcı verisi gönderen bileşenleri aydınlatma metnine ve yurt dışı aktarım değerlendirmesine ekle.
 
 ## 10. Teslim öncesi kontrol listesi
 
