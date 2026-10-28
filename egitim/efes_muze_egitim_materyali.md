@@ -111,13 +111,19 @@ kararlar için müdürlüğün hukuk birimine danışılmalıdır.
 
 ## 10. Kaynakça
 
-Biçim: Kurum/Başlık, yayımlayan, erişim tarihi. Makine okunur sürümü `kaynakca.bib`
-dosyasındadır (Zotero'ya içe aktarılabilir). Eksik yazar/yıl alanları kaynak açılarak
-tamamlanmalıdır; uydurulmamıştır.
+Biçim: APA 7. Yazarı olmayan kaynaklarda başlık yazar yerine geçer, yılı olmayanlarda
+(t.y.) kullanılır. Eksik bilgi uydurulmamış, köşeli parantezle işaretlenmiştir; kaynak
+açılarak tamamlanmalıdır. Makine okunur sürüm: `kaynakca.bib` (Zotero'ya aktarılabilir).
+Metin içi atıf örneği: (Müzeler İç Hizmetler Yönetmeliği, t.y.).
 
-1. *Süreli Kullanım Yönergesi*. Lexpera Mevzuat. https://www.lexpera.com.tr/mevzuat/yonergeler/sureli-kullanim-yonergesi-2020-10 (erişim: 28.10.2026)
-2. *Müze ve örenyerlerine girişlerde uygulanacak usul ve esaslar*. T.C. Kültür ve Turizm Bakanlığı, Sinop İl Müdürlüğü. https://sinop.ktb.gov.tr/TR-398802/muze-ve-orenyerlerine-girislerde-uygulanacak-usul-ve-es-.html (erişim: 28.10.2026)
-3. *Müze Eğitiminin Gelişimi*. Humanitas (DergiPark). https://dergipark.org.tr/en/pub/humanitas/article/404777 (erişim: 28.10.2026) – yazar/yıl eksik
-4. *Müzelerin eğitim ortamı olarak kullanımı*. Uludağ Üniversitesi Açık Erişim. https://acikerisim.uludag.edu.tr/items/e958fdde-04c6-4656-be41-c27fadf3ca68 (erişim: 28.10.2026) – yazar/yıl eksik
-5. 2863 sayılı Kültür ve Tabiat Varlıklarını Koruma Kanunu – mevzuat.gov.tr (güncel metin teyit edilecek)
-6. Müzeler İç Hizmetler Yönetmeliği – mevzuat.gov.tr (md. 5/c ikincil kaynaktan; teyit edilecek)
+*Kültür ve Tabiat Varlıklarını Koruma Kanunu* (Kanun No. 2863). (t.y.). [Resmî Gazete tarihi ve sayısı eklenecek]. 28 Ekim 2026 tarihinde https://www.mevzuat.gov.tr adresinden erişildi.
+
+*Müze ve örenyerlerine girişlerde uygulanacak usul ve esaslar*. (t.y.). T.C. Kültür ve Turizm Bakanlığı, Sinop İl Müdürlüğü. 28 Ekim 2026 tarihinde https://sinop.ktb.gov.tr/TR-398802/muze-ve-orenyerlerine-girislerde-uygulanacak-usul-ve-es-.html adresinden erişildi.
+
+*Müze eğitiminin gelişimi*. ([Yazar], [yıl]). *Humanitas*, [cilt]([sayı]), [sayfa]. 28 Ekim 2026 tarihinde https://dergipark.org.tr/en/pub/humanitas/article/404777 adresinden erişildi.
+
+*Müzeler İç Hizmetler Yönetmeliği*. (t.y.). [Resmî Gazete tarihi ve sayısı eklenecek]. 28 Ekim 2026 tarihinde https://www.mevzuat.gov.tr adresinden erişildi.
+
+*Müzelerin eğitim ortamı olarak kullanımı*. ([Yazar], [yıl]). Uludağ Üniversitesi Açık Erişim. 28 Ekim 2026 tarihinde https://acikerisim.uludag.edu.tr/items/e958fdde-04c6-4656-be41-c27fadf3ca68 adresinden erişildi.
+
+*Süreli Kullanım Yönergesi*. (2020). Lexpera Mevzuat. 28 Ekim 2026 tarihinde https://www.lexpera.com.tr/mevzuat/yonergeler/sureli-kullanim-yonergesi-2020-10 adresinden erişildi.
