@@ -16,8 +16,10 @@ python3 muze.py kitap-stok 9780306406157 10
 python3 muze.py kitap-listele --ara Efes
 ```
 Kitap modülü: ISBN-13 doğrulanır, stok eksiye düşürülmez, satışlar günlük raporda görünür.
-Not: yayın satış gelirlerinin muhasebeleştirilmesi (5018 sayılı Kanun), KDV oranı ve mevzuata uygun künye/ISBN/yasal depo
-yükümlülükleri program dışında ilgili mevzuattan teyit edilmelidir.
+Mevzuat notu (kontrol tarihi 2026-10-28, kaynaklar web aramasıyla; resmî metinle teyit edilmeli):
+- Yayın satış gelirleri 2252 sayılı Kültür Bakanlığı Döner Sermaye Kanunu ve Kültür ve Turizm Bakanlığı Döner Sermaye Yönetmeliği kapsamındadır (yönetmeliğin güncel metni doğrulanamadı); program yalnızca kayıt tutar, tahsilat/tahakkuk ve fiyat tarifesi Döner Sermaye usullerine göre yürütülmelidir.
+- Basılı kitap teslimi KDV'den istisnadır (3065 s. K. md. 13/n, 7166 s. K.; 2026 geçerliliği doğrulanamadı). E-kitap ve poşetli yayınlar kapsam dışıdır.
+- Müze kendi kitabını bastırıyorsa 6279 sayılı Kanun'a göre yasal depo (Millî Kütüphane vb.) yükümlülüğü doğabilir.
 
 Bilet türleri: yetiskin (200 TL), ogrenci (50 TL), cocuk, muze_kart (ücretsiz).
 
