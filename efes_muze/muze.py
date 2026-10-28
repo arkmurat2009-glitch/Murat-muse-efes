@@ -24,6 +24,22 @@ CREATE TABLE IF NOT EXISTS sergiler(
   ad TEXT UNIQUE NOT NULL,
   salon TEXT
 );
+CREATE TABLE IF NOT EXISTS kitaplar(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  isbn TEXT UNIQUE NOT NULL,
+  ad TEXT NOT NULL,
+  yazar TEXT,
+  yayinevi TEXT,
+  fiyat REAL NOT NULL CHECK(fiyat >= 0),
+  stok INTEGER NOT NULL DEFAULT 0 CHECK(stok >= 0)
+);
+CREATE TABLE IF NOT EXISTS kitap_satislari(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  tarih TEXT NOT NULL,
+  kitap_id INTEGER NOT NULL REFERENCES kitaplar(id),
+  adet INTEGER NOT NULL,
+  tutar REAL NOT NULL
+);
 CREATE TABLE IF NOT EXISTS biletler(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   tarih TEXT NOT NULL,
@@ -112,6 +128,65 @@ def bilet_sat(a):
     print(f"{a.adet} x {a.tur} bileti satıldı. Tutar: {tutar:.2f} TL")
 
 
+def isbn_gecerli(isbn):
+    """ISBN-13 (978/979) kontrol hanesi doğrulaması."""
+    if len(isbn) != 13 or not isbn.isdigit() or not isbn.startswith(("978", "979")):
+        return False
+    return sum(int(c) * (1 if i % 2 == 0 else 3) for i, c in enumerate(isbn)) % 10 == 0
+
+
+def kitap_ekle(a):
+    isbn = a.isbn.replace("-", "")
+    if not isbn_gecerli(isbn):
+        sys.exit("Hata: geçersiz ISBN-13.")
+    if a.fiyat < 0 or a.stok < 0:
+        sys.exit("Hata: fiyat ve stok negatif olamaz.")
+    with baglan() as con:
+        try:
+            con.execute("INSERT INTO kitaplar(isbn,ad,yazar,yayinevi,fiyat,stok) VALUES(?,?,?,?,?,?)",
+                        (isbn, a.ad, a.yazar, a.yayinevi, a.fiyat, a.stok))
+        except sqlite3.IntegrityError:
+            sys.exit(f"Hata: {isbn} ISBN'li kitap zaten kayıtlı.")
+    print("Kitap eklendi.")
+
+
+def kitap_listele(a):
+    sql = "SELECT * FROM kitaplar"
+    p = []
+    if a.ara:
+        sql += " WHERE ad LIKE ? OR yazar LIKE ? OR isbn LIKE ?"
+        p = [f"%{a.ara}%"] * 3
+    for r in baglan().execute(sql + " ORDER BY ad", p):
+        print(f"{r['isbn']:<14} {r['ad']:<30} {r['yazar'] or '-':<20} "
+              f"{r['fiyat']:>8.2f} TL  stok: {r['stok']}")
+
+
+def kitap_stok(a):
+    with baglan() as con:
+        try:
+            n = con.execute("UPDATE kitaplar SET stok=stok+? WHERE isbn=?",
+                            (a.adet, a.isbn.replace("-", ""))).rowcount
+        except sqlite3.IntegrityError:
+            sys.exit("Hata: stok negatif olamaz.")
+    print("Stok güncellendi." if n else "Kitap bulunamadı.")
+
+
+def kitap_sat(a):
+    if a.adet < 1:
+        sys.exit("Adet en az 1 olmalı.")
+    with baglan() as con:
+        k = con.execute("SELECT * FROM kitaplar WHERE isbn=?", (a.isbn.replace("-", ""),)).fetchone()
+        if not k:
+            sys.exit("Kitap bulunamadı.")
+        if k["stok"] < a.adet:
+            sys.exit(f"Yetersiz stok (mevcut: {k['stok']}).")
+        tutar = k["fiyat"] * a.adet
+        con.execute("UPDATE kitaplar SET stok=stok-? WHERE id=?", (a.adet, k["id"]))
+        con.execute("INSERT INTO kitap_satislari(tarih,kitap_id,adet,tutar) VALUES(?,?,?,?)",
+                    (date.today().isoformat(), k["id"], a.adet, tutar))
+    print(f"{a.adet} x {k['ad']} satıldı. Tutar: {tutar:.2f} TL")
+
+
 def rapor(a):
     con = baglan()
     t = a.tarih or date.today().isoformat()
@@ -120,6 +195,8 @@ def rapor(a):
         print(f"{r['tur']:<10} {r['n']:>5} kişi  {r['t']:>9.2f} TL")
     r = con.execute("SELECT COALESCE(SUM(adet),0) n, COALESCE(SUM(tutar),0) t FROM biletler WHERE tarih=?", (t,)).fetchone()
     print(f"TOPLAM     {r['n']:>5} kişi  {r['t']:>9.2f} TL")
+    r = con.execute("SELECT COALESCE(SUM(adet),0) n, COALESCE(SUM(tutar),0) t FROM kitap_satislari WHERE tarih=?", (t,)).fetchone()
+    print(f"KİTAP SATIŞI {r['n']:>3} adet {r['t']:>9.2f} TL")
     print("-- Eser durumları --")
     for r in con.execute("SELECT durum, COUNT(*) n FROM eserler GROUP BY durum"):
         print(f"{r['durum']:<14} {r['n']}")
@@ -149,6 +226,16 @@ def main():
 
     x = sp.add_parser("bilet", help="bilet sat")
     x.add_argument("tur"); x.add_argument("adet", type=int); x.set_defaults(f=bilet_sat)
+
+    x = sp.add_parser("kitap-ekle", help="yayın/kitap kaydı")
+    x.add_argument("isbn"); x.add_argument("ad"); x.add_argument("fiyat", type=float)
+    x.add_argument("--yazar"); x.add_argument("--yayinevi"); x.add_argument("--stok", type=int, default=0)
+    x.set_defaults(f=kitap_ekle)
+    x = sp.add_parser("kitap-listele", help="kitapları listele/ara"); x.add_argument("--ara"); x.set_defaults(f=kitap_listele)
+    x = sp.add_parser("kitap-stok", help="stok ekle (negatif: düş)")
+    x.add_argument("isbn"); x.add_argument("adet", type=int); x.set_defaults(f=kitap_stok)
+    x = sp.add_parser("kitap-sat", help="kitap sat")
+    x.add_argument("isbn"); x.add_argument("adet", type=int); x.set_defaults(f=kitap_sat)
 
     x = sp.add_parser("rapor", help="günlük rapor"); x.add_argument("--tarih"); x.set_defaults(f=rapor)
 
