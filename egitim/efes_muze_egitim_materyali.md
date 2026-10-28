@@ -108,3 +108,16 @@ kararlar için müdürlüğün hukuk birimine danışılmalıdır.
 - [ ] KVKK/veli izin metni hukuk birimince onaylandı
 - [ ] Sergi düzenine göre durak içerikleri güncellendi
 - [ ] Müdürlük onayı alındı
+
+## 10. Kaynakça
+
+Biçim: Kurum/Başlık, yayımlayan, erişim tarihi. Makine okunur sürümü `kaynakca.bib`
+dosyasındadır (Zotero'ya içe aktarılabilir). Eksik yazar/yıl alanları kaynak açılarak
+tamamlanmalıdır; uydurulmamıştır.
+
+1. *Süreli Kullanım Yönergesi*. Lexpera Mevzuat. https://www.lexpera.com.tr/mevzuat/yonergeler/sureli-kullanim-yonergesi-2020-10 (erişim: 28.10.2026)
+2. *Müze ve örenyerlerine girişlerde uygulanacak usul ve esaslar*. T.C. Kültür ve Turizm Bakanlığı, Sinop İl Müdürlüğü. https://sinop.ktb.gov.tr/TR-398802/muze-ve-orenyerlerine-girislerde-uygulanacak-usul-ve-es-.html (erişim: 28.10.2026)
+3. *Müze Eğitiminin Gelişimi*. Humanitas (DergiPark). https://dergipark.org.tr/en/pub/humanitas/article/404777 (erişim: 28.10.2026) – yazar/yıl eksik
+4. *Müzelerin eğitim ortamı olarak kullanımı*. Uludağ Üniversitesi Açık Erişim. https://acikerisim.uludag.edu.tr/items/e958fdde-04c6-4656-be41-c27fadf3ca68 (erişim: 28.10.2026) – yazar/yıl eksik
+5. 2863 sayılı Kültür ve Tabiat Varlıklarını Koruma Kanunu – mevzuat.gov.tr (güncel metin teyit edilecek)
+6. Müzeler İç Hizmetler Yönetmeliği – mevzuat.gov.tr (md. 5/c ikincil kaynaktan; teyit edilecek)
