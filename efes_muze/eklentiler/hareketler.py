@@ -37,6 +37,9 @@ def kullanici_adi(a=None):
     if not k:
         try:
             k = getpass.getuser()
+            if k.lower() in ("root", "admin", "administrator"):
+                print(f"Uyarı: paylaşımlı hesap '{k}' denetim izini anlamsızlaştırır; "
+                      "--kullanici veya EFES_KULLANICI belirtin.", file=sys.stderr)
         except Exception:
             k = os.environ.get("USER") or "bilinmiyor"
     return k

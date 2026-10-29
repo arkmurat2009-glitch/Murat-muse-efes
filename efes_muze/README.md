@@ -22,6 +22,8 @@ geçilir; `odunc` veya `restorasyonda` eser sergiye yerleştirilemez.
 Her geçiş `hareketler` tablosuna (tarih, eski/yeni durum ve sergi, kullanıcı, açıklama) aynı işlemde yazılır; tablo
 ekleme-yalnızdır (UPDATE/DELETE tetikleyiciyle engelli). `eser-durum` ve `yerlestir` için `--kullanici` ve `--aciklama`
 verilebilir; kullanıcı verilmezse `EFES_KULLANICI` ortam değişkeni, o da yoksa işletim sistemi kullanıcısı kullanılır.
+Sınır: ekleme-yalnız koruma tetikleyiciyle sağlanır, DB dosyasına doğrudan erişimi (dosya silme/yeniden yazma) engellemez; dosya izinleri ve yedekleme ayrıca yönetilmelidir.
+Geçersiz (eski sürümden kalma) bir durumdaki eser yalnızca `eser-durum NO depoda` ile kurtarılır. Eşzamanlı değişiklikte komut hata verir, tekrar denenir.
 Not (KVKK 6698): `kullanici` personel kimliğidir; saklama süresi/erişim kurum politikasına göre belirlenmelidir.
 
 DB doğrulaması: mevcut tabloya CHECK eklenemediğinden `eklentiler/dogrulama.py` tetikleyicilerle geçersiz durum,
