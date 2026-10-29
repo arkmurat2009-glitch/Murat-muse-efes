@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Efes Müzesi Yönetim Programı: eser envanteri, ziyaretçi/bilet ve sergi yönetimi."""
 import argparse
+import os
 import sqlite3
 import sys
 from datetime import date
 
-DB = "efes_muze.db"
+import eklentiler
+from eklentiler import gecis
+
+# Test/özel kurulum için EFES_MUZE_DB ortam değişkeniyle değiştirilebilir.
+DB = os.environ.get("EFES_MUZE_DB", "efes_muze.db")
 BILET_FIYAT = {"yetiskin": 200.0, "ogrenci": 50.0, "cocuk": 0.0, "muze_kart": 0.0}
 
 SEMA = """
@@ -39,6 +44,7 @@ def baglan():
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA foreign_keys=ON")
     con.executescript(SEMA)
+    eklentiler.sema_uygula(con)
     return con
 
 
@@ -69,10 +75,11 @@ def eser_listele(a):
 
 def eser_durum(a):
     with baglan() as con:
-        n = con.execute("UPDATE eserler SET durum=? WHERE envanter_no=?", (a.durum, a.no)).rowcount
-        if a.durum != "sergide":
-            con.execute("UPDATE eserler SET sergi_id=NULL WHERE envanter_no=?", (a.no,))
-    print("Güncellendi." if n else "Eser bulunamadı.")
+        try:
+            gecis.degistir(con, a.no, a.durum, kullanici=a.kullanici, aciklama=a.aciklama)
+        except gecis.GecisHatasi as h:
+            sys.exit(f"Hata: {h}")
+    print("Güncellendi.")
 
 
 def sergi_ekle(a):
@@ -89,9 +96,11 @@ def sergiye_yerlestir(a):
         s = con.execute("SELECT id FROM sergiler WHERE ad=?", (a.sergi,)).fetchone()
         if not s:
             sys.exit("Sergi bulunamadı.")
-        n = con.execute("UPDATE eserler SET sergi_id=?, durum='sergide' WHERE envanter_no=? AND durum!='restorasyonda'",
-                        (s["id"], a.no)).rowcount
-    print("Eser sergiye yerleştirildi." if n else "Eser bulunamadı veya restorasyonda.")
+        try:
+            gecis.degistir(con, a.no, "sergide", sergi_id=s["id"], kullanici=a.kullanici, aciklama=a.aciklama)
+        except gecis.GecisHatasi as h:
+            sys.exit(f"Hata: {h}")
+    print("Eser sergiye yerleştirildi.")
 
 
 def sergi_listele(a):
@@ -140,17 +149,21 @@ def main():
 
     x = sp.add_parser("eser-durum", help="eser durumunu değiştir")
     x.add_argument("no"); x.add_argument("durum", choices=["depoda", "sergide", "restorasyonda", "odunc"])
+    x.add_argument("--kullanici"); x.add_argument("--aciklama")
     x.set_defaults(f=eser_durum)
 
     x = sp.add_parser("sergi-ekle"); x.add_argument("ad"); x.add_argument("--salon"); x.set_defaults(f=sergi_ekle)
     x = sp.add_parser("sergi-listele"); x.set_defaults(f=sergi_listele)
     x = sp.add_parser("yerlestir", help="eseri sergiye yerleştir")
-    x.add_argument("no"); x.add_argument("sergi"); x.set_defaults(f=sergiye_yerlestir)
+    x.add_argument("no"); x.add_argument("sergi")
+    x.add_argument("--kullanici"); x.add_argument("--aciklama"); x.set_defaults(f=sergiye_yerlestir)
 
     x = sp.add_parser("bilet", help="bilet sat")
     x.add_argument("tur"); x.add_argument("adet", type=int); x.set_defaults(f=bilet_sat)
 
     x = sp.add_parser("rapor", help="günlük rapor"); x.add_argument("--tarih"); x.set_defaults(f=rapor)
+
+    eklentiler.komutlari_ekle(sp)
 
     a = p.parse_args()
     a.f(a)
