@@ -10,8 +10,28 @@ python3 muze.py eser-durum EF-001 restorasyonda
 python3 muze.py eser-listele --ara Roma
 python3 muze.py bilet yetiskin 2
 python3 muze.py rapor
+python3 muze.py eser-gecmis EF-001
 ```
 Bilet türleri: yetiskin (200 TL), ogrenci (50 TL), cocuk, muze_kart (ücretsiz).
+
+## Durum geçişleri ve denetim izi
+
+İzinli geçişler: `depoda` -> sergide/restorasyonda/odunc; `sergide` -> başka sergi/depoda/restorasyonda/odunc;
+`restorasyonda` ve `odunc` -> yalnızca `depoda` (iade). `sergide` durumuna yalnızca `yerlestir` ile (sergi belirterek)
+geçilir; `odunc` veya `restorasyonda` eser sergiye yerleştirilemez.
+Her geçiş `hareketler` tablosuna (tarih, eski/yeni durum ve sergi, kullanıcı, açıklama) aynı işlemde yazılır; tablo
+ekleme-yalnızdır (UPDATE/DELETE tetikleyiciyle engelli). `eser-durum` ve `yerlestir` için `--kullanici` ve `--aciklama`
+verilebilir; kullanıcı verilmezse `EFES_KULLANICI` ortam değişkeni, o da yoksa işletim sistemi kullanıcısı kullanılır.
+Sınır: ekleme-yalnız koruma tetikleyiciyle sağlanır, DB dosyasına doğrudan erişimi (dosya silme/yeniden yazma) engellemez; dosya izinleri ve yedekleme ayrıca yönetilmelidir.
+Geçersiz (eski sürümden kalma) bir durumdaki eser yalnızca `eser-durum NO depoda` ile kurtarılır. Eşzamanlı değişiklikte komut hata verir, tekrar denenir.
+Not (KVKK 6698): `kullanici` personel kimliğidir; saklama süresi/erişim kurum politikasına göre belirlenmelidir.
+
+DB doğrulaması: mevcut tabloya CHECK eklenemediğinden `eklentiler/dogrulama.py` tetikleyicilerle geçersiz durum,
+sergisiz `sergide`, geçersiz bilet türü/adet/tutar yazımlarını reddeder (mevcut veriye dokunmaz, eski DB'ler açılışta
+otomatik yükseltilir). Yeni özellikler `eklentiler/` altında modül olarak eklenir (`sema`, `komutlar` kancaları).
+
+Veritabanı yolu `EFES_MUZE_DB` ortam değişkeniyle değiştirilebilir (varsayılan: `efes_muze.db`).
+Test: `python3 -m unittest test_gecis -v`
 
 ## Masaüstü saati
 
