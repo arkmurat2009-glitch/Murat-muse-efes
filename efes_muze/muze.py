@@ -7,7 +7,7 @@ import sys
 from datetime import date
 
 import eklentiler
-from eklentiler import gecis, takip
+from eklentiler import gecis, tarife, takip
 
 # Test/özel kurulum için EFES_MUZE_DB ortam değişkeniyle değiştirilebilir.
 DB = os.environ.get("EFES_MUZE_DB", "efes_muze.db")
@@ -137,8 +137,10 @@ def bilet_sat(a):
         sys.exit(f"Geçersiz tür. Seçenekler: {', '.join(BILET_FIYAT)}")
     if a.adet < 1:
         sys.exit("Adet en az 1 olmalı.")
-    tutar = BILET_FIYAT[a.tur] * a.adet
     with baglan() as con:
+        # Fiyat tarife tablosundan; kayıt yoksa eski sabit fiyat (doğrulanmamış varsayılan) kullanılır.
+        birim = tarife.fiyat(con, a.tur, date.today().isoformat(), BILET_FIYAT[a.tur])
+        tutar = birim * a.adet
         con.execute("INSERT INTO biletler(tarih,tur,adet,tutar) VALUES(?,?,?,?)",
                     (date.today().isoformat(), a.tur, a.adet, tutar))
     print(f"{a.adet} x {a.tur} bileti satıldı. Tutar: {tutar:.2f} TL")
@@ -211,6 +213,10 @@ def rapor(a):
         print(f"{r['tur']:<10} {r['n']:>5} kişi  {r['t']:>9.2f} TL")
     r = con.execute("SELECT COALESCE(SUM(adet),0) n, COALESCE(SUM(tutar),0) t FROM biletler WHERE tarih=?", (t,)).fetchone()
     print(f"TOPLAM     {r['n']:>5} kişi  {r['t']:>9.2f} TL")
+    in_, it = tarife.iade_ozeti(con, t)
+    if in_:
+        print(f"İADE       {in_:>5} kişi  {-it:>9.2f} TL")
+        print(f"NET        {r['n'] - in_:>5} kişi  {r['t'] - it:>9.2f} TL")
     r = con.execute("SELECT COALESCE(SUM(adet),0) n, COALESCE(SUM(tutar),0) t FROM kitap_satislari WHERE tarih=?", (t,)).fetchone()
     print(f"KİTAP SATIŞI {r['n']:>3} adet {r['t']:>9.2f} TL")
     print("-- Eser durumları --")

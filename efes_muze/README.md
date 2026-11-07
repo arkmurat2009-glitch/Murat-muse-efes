@@ -64,6 +64,25 @@ python3 muze.py geciken-listesi
   `--izin-no` serbest metindir. Sorumlu/kullanıcı personel adıdır (KVKK 6698), ziyaretçi verisi tutulmaz.
 - Test: `python3 -m unittest test_gecis test_takip -v`
 
+## Bilet tarifesi ve iade
+
+```
+python3 muze.py tarife-ayarla yetiskin 700 --baslangic 2026-07-01 --kaynak "KTB tarife duyurusu"
+python3 muze.py tarife-listele
+python3 muze.py bilet-iade yetiskin 1 --neden "yanlış tür seçildi" [--satis-tarihi 2026-11-01]
+python3 muze.py rapor        # iade ve net tutarı da gösterir
+```
+- Fiyat artık `tarifeler` tablosundan, satış gününde geçerli son kayıttan okunur. Her kayıt tarihli, kaynaklı (yönerge/duyuru) ve
+  değiştirilemez; tarife değişince yeni tarihle yeni kayıt eklenir. Tarife kaydı yoksa eski sabit fiyatlar (200 / 50 TL, doğrulanmamış varsayılan) kullanılır.
+- `bilet-iade`: gerekçe zorunludur; iade edilebilir adet, o günün satışlarından hesaplanır (fazlası reddedilir). Gün içinde tarife
+  değiştiyse iade tutarı o günün ortalama birim fiyatıdır. İade kayıtları silinemez/değiştirilemez; satış kaydı da değiştirilmez.
+- Mevzuat (kontrol 2026-11-07, web aramasıyla; resmî metinle teyit edilmeli): giriş ücretleri Bakanlığın giriş usul ve esasları
+  yönergesine ekli listededir (2252 s. Döner Sermaye Kanunu çerçevesi); kaynaklar güncel fiyatlarda çelişkilidir, tarife resmî duyurudan
+  girilmelidir. Ücretsiz giriş kategorileri (ör. 18 yaş ve altı, 65 yaş ve üstü T.C. vatandaşları) yönergeye göredir; güncel yaş/belge
+  şartları teyit edilmelidir. Bilet iadesinin usulüne dair hüküm doğrulanamadı: program yalnızca gerekçeli kayıt tutar; tahsilat/iade
+  işlemi kurumun Döner Sermaye ve muhasebe usullerine göre ayrıca yapılır. Yalnızca personel adı tutulur (KVKK 6698).
+- Test: `python3 -m unittest test_gecis test_takip test_tarife -v`
+
 ## Masaüstü saati
 
 `python3 saat.py` — dijital saat (SS:DD), Efes hava durumu (Open-Meteo, 15 dk'da bir yenilenir) ve aylık takvim.
