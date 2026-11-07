@@ -7,6 +7,8 @@ Veri kaynağı: Open-Meteo.com (CC BY 4.0).
 """
 import calendar
 import json
+import os
+import random
 import threading
 import tkinter as tk
 import urllib.request
@@ -37,7 +39,23 @@ HAVA_KODLARI = {
     95: ("Gök gürültülü fırtına", "⛈"), 96: ("Dolulu fırtına", "⛈"), 99: ("Dolulu fırtına", "⛈"),
 }
 
-ARKA, KART, YAZI, SOLUK, VURGU, HAFTA_SONU = "#0f172a", "#1e293b", "#f8fafc", "#94a3b8", "#38bdf8", "#f87171"
+ARKA, KART, YAZI, SOLUK, VURGU, HAFTA_SONU = "#0f172a", "#0b1220", "#f8fafc", "#cbd5e1", "#38bdf8", "#f87171"
+GEN, YUK = 400, 700
+ARKA_PLAN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arka_plan.png")
+TAKVIM_Y = 478  # takvim panelinin üst kenarı (büstün yüzü üstte açık kalsın diye altta)
+
+
+def gokyuzu_ciz(c):
+    """Alacakaranlık gökyüzü (üstten alta lacivert → turuncu) ve yıldızlar."""
+    ust, alt = (0x1e, 0x1b, 0x4b), (0xf5, 0x9e, 0x0b)
+    for y in range(YUK):
+        t = (y / YUK) ** 1.6
+        renk = "#%02x%02x%02x" % tuple(int(u + (a - u) * t) for u, a in zip(ust, alt))
+        c.create_line(0, y, GEN, y, fill=renk)
+    rnd = random.Random(7)
+    for _ in range(45):
+        x, y = rnd.randint(0, GEN), rnd.randint(0, 330)
+        c.create_oval(x, y, x + 2, y + 2, fill="#fef9c3", outline="")
 
 
 def hava_al():
@@ -50,36 +68,32 @@ class Saat(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Efes Müzesi Saat")
-        self.configure(bg=ARKA)
-        self.geometry("380x520")
-        self.minsize(340, 480)
+        self.resizable(False, False)
         self.attributes("-topmost", True)  # masaüstünde üstte kalsın; Esc ile kapanır
         self.bind("<Escape>", lambda _e: self.destroy())
         self._nokta = True
         self._takvim_ay = None
         self._hava_sonuc = None  # arka plan iş parçacığı yazar, ana döngü okur (Tk iş parçacığı güvenli değil)
 
-        self.lbl_saat = tk.Label(self, font=("DejaVu Sans Mono", 64, "bold"), fg=YAZI, bg=ARKA)
-        self.lbl_saat.pack(pady=(24, 0))
-        self.lbl_tarih = tk.Label(self, font=("DejaVu Sans", 13), fg=SOLUK, bg=ARKA)
-        self.lbl_tarih.pack()
+        c = self.c = tk.Canvas(self, width=GEN, height=YUK, highlightthickness=0, bg=ARKA)
+        c.pack()
+        try:  # Marcus Aurelius büstü fotoğrafı (400x700 PNG, önceden hazırlanmış)
+            self._arka = tk.PhotoImage(file=ARKA_PLAN)
+            c.create_image(0, 0, image=self._arka, anchor="nw")
+        except tk.TclError:  # dosya yoksa gökyüzü zeminiyle devam et
+            gokyuzu_ciz(c)
 
-        hava = tk.Frame(self, bg=KART)
-        hava.pack(fill="x", padx=20, pady=18, ipady=8)
-        self.lbl_simge = tk.Label(hava, font=("DejaVu Sans", 34), fg=VURGU, bg=KART)
-        self.lbl_simge.pack(side="left", padx=(16, 8))
-        yan = tk.Frame(hava, bg=KART)
-        yan.pack(side="left", fill="x", expand=True)
-        self.lbl_derece = tk.Label(yan, text="--°C", font=("DejaVu Sans", 22, "bold"),
-                                   fg=YAZI, bg=KART, anchor="w")
-        self.lbl_derece.pack(fill="x")
-        self.lbl_durum = tk.Label(yan, text="Hava durumu alınıyor…", font=("DejaVu Sans", 10),
-                                  fg=SOLUK, bg=KART, anchor="w", justify="left")
-        self.lbl_durum.pack(fill="x")
+        # yarı saydam paneller (stipple): arkadaki kütüphane hafifçe görünür
+        c.create_rectangle(20, 150, GEN - 20, 232, fill=KART, stipple="gray75", outline="")
+        c.create_rectangle(20, TAKVIM_Y, GEN - 20, TAKVIM_Y + 216, fill=KART, stipple="gray75", outline="")
 
-        self.takvim = tk.Frame(self, bg=KART)
-        self.takvim.pack(fill="both", expand=True, padx=20, pady=(0, 16))
-
+        self.t_saat = c.create_text(GEN // 2, 64, font=("DejaVu Sans Mono", 68, "bold"), fill=YAZI)
+        self.t_tarih = c.create_text(GEN // 2, 128, font=("DejaVu Sans", 13), fill=SOLUK)
+        self.t_simge = c.create_text(58, 191, font=("DejaVu Sans", 32), fill=VURGU, text="…")
+        self.t_derece = c.create_text(100, 176, anchor="w", font=("DejaVu Sans", 22, "bold"),
+                                      fill=YAZI, text="--°C")
+        self.t_durum = c.create_text(100, 205, anchor="w", font=("DejaVu Sans", 9), fill=SOLUK,
+                                     text="Hava durumu alınıyor…")
         self._saati_guncelle()
         self._havayi_guncelle()
 
@@ -87,9 +101,9 @@ class Saat(tk.Tk):
         simdi = datetime.now()
         ayrac = ":" if self._nokta else " "
         self._nokta = not self._nokta
-        self.lbl_saat.config(text=f"{simdi:%H}{ayrac}{simdi:%M}")
-        self.lbl_tarih.config(
-            text=f"{simdi.day} {AYLAR[simdi.month - 1]} {simdi.year}, {GUNLER[simdi.weekday()]}")
+        self.c.itemconfig(self.t_saat, text=f"{simdi:%H}{ayrac}{simdi:%M}")
+        self.c.itemconfig(self.t_tarih, text=(
+            f"{simdi.day} {AYLAR[simdi.month - 1]} {simdi.year}, {GUNLER[simdi.weekday()]}"))
         anahtar = (simdi.year, simdi.month, simdi.day)
         if anahtar != self._takvim_ay:  # yalnızca gün değişince yeniden çiz
             self._takvim_ay = anahtar
@@ -100,26 +114,25 @@ class Saat(tk.Tk):
         self.after(500, self._saati_guncelle)
 
     def _takvimi_ciz(self, simdi):
-        for w in self.takvim.winfo_children():
-            w.destroy()
-        tk.Label(self.takvim, text=f"{AYLAR[simdi.month - 1]} {simdi.year}",
-                 font=("DejaVu Sans", 13, "bold"), fg=YAZI, bg=KART).grid(
-            row=0, column=0, columnspan=7, pady=(10, 6))
+        c = self.c
+        c.delete("takvim")
+        c.create_text(GEN // 2, TAKVIM_Y + 20, text=f"{AYLAR[simdi.month - 1]} {simdi.year}", tags="takvim",
+                      font=("DejaVu Sans", 13, "bold"), fill=YAZI)
+        adim, sol = 51, 20 + 51 // 2 - 3
         for i, g in enumerate(GUN_KISA):
-            tk.Label(self.takvim, text=g, font=("DejaVu Sans", 10, "bold"),
-                     fg=HAFTA_SONU if i >= 5 else SOLUK, bg=KART).grid(row=1, column=i, sticky="nsew")
+            c.create_text(sol + i * adim, TAKVIM_Y + 44, text=g, tags="takvim", font=("DejaVu Sans", 10, "bold"),
+                          fill=HAFTA_SONU if i >= 5 else SOLUK)
         for r, hafta in enumerate(calendar.Calendar(firstweekday=0).monthdayscalendar(
-                simdi.year, simdi.month), start=2):
-            for c, gun in enumerate(hafta):
+                simdi.year, simdi.month)):
+            for k, gun in enumerate(hafta):
                 if gun == 0:
                     continue
-                # bugün vurgulu, hafta sonları kırmızı
-                bugun = gun == simdi.day
-                tk.Label(self.takvim, text=str(gun), font=("DejaVu Sans", 11, "bold" if bugun else "normal"),
-                         fg=ARKA if bugun else (HAFTA_SONU if c >= 5 else YAZI),
-                         bg=VURGU if bugun else KART, width=3).grid(row=r, column=c, padx=1, pady=2)
-        for c in range(7):
-            self.takvim.columnconfigure(c, weight=1)
+                x, y, bugun = sol + k * adim, TAKVIM_Y + 70 + r * 24, gun == simdi.day
+                if bugun:  # bugün vurgulu, hafta sonları kırmızı
+                    c.create_oval(x - 13, y - 11, x + 13, y + 11, fill=VURGU, outline="", tags="takvim")
+                c.create_text(x, y, text=str(gun), tags="takvim",
+                              font=("DejaVu Sans", 11, "bold" if bugun else "normal"),
+                              fill=ARKA if bugun else (HAFTA_SONU if k >= 5 else YAZI))
 
     def _havayi_guncelle(self):
         threading.Thread(target=self._hava_getir, daemon=True).start()
@@ -137,9 +150,9 @@ class Saat(tk.Tk):
         self._hava_sonuc = (simge, derece, ayrinti)
 
     def _havayi_goster(self, simge, derece, ayrinti):
-        self.lbl_simge.config(text=simge)
-        self.lbl_derece.config(text=derece)
-        self.lbl_durum.config(text=ayrinti)
+        self.c.itemconfig(self.t_simge, text=simge)
+        self.c.itemconfig(self.t_derece, text=derece)
+        self.c.itemconfig(self.t_durum, text=ayrinti)
 
 
 if __name__ == "__main__":
