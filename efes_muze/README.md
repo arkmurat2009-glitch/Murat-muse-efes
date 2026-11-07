@@ -12,3 +12,8 @@ python3 muze.py bilet yetiskin 2
 python3 muze.py rapor
 ```
 Bilet türleri: yetiskin (200 TL), ogrenci (50 TL), cocuk, muze_kart (ücretsiz).
+
+## Masaüstü saati
+
+`python3 saat.py` — dijital saat (SS:DD), Efes hava durumu (Open-Meteo, 15 dk'da bir yenilenir) ve aylık takvim.
+Gerekli: `python3-tk` (Linux). Kapatmak için Esc.
