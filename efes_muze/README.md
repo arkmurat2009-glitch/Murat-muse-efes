@@ -43,6 +43,27 @@ otomatik yükseltilir). Yeni özellikler `eklentiler/` altında modül olarak ek
 Veritabanı yolu `EFES_MUZE_DB` ortam değişkeniyle değiştirilebilir (varsayılan: `efes_muze.db`).
 Test: `python3 -m unittest test_gecis -v`
 
+## Restorasyon ve ödünç takibi
+
+```
+python3 muze.py restorasyon-baslat EF-001 --atolye "İzmir Bölge Lab." --sorumlu "A. Yılmaz" --bitis 2026-12-31
+python3 muze.py restorasyon-bitir EF-001 --not "temizlik tamamlandı"
+python3 muze.py odunc-ver EF-001 "Ankara Müzesi" --donus 2027-03-01 --sigorta 50000 --izin-no "2026/15"
+python3 muze.py odunc-ver EF-002 "Louvre" --donus 2027-06-01 --sigorta 900000 --izin-no "K-123" --yurt-disi --ulke-sayisi 1
+python3 muze.py odunc-iade EF-001 --kondisyon "hasarsız"
+python3 muze.py geciken-listesi
+```
+- `restorasyonda` ve `odunc` durumlarına artık yalnızca bu komutlarla geçilir (`eser-durum` reddeder); her işlem
+  tarihli kayıt tutar ve `hareketler` denetim izine yazılır. Açık kaydı olan eser `eser-durum` ile depoya alınamaz.
+- Kayıtlar silinemez; kapanmış kayıt değiştirilemez. Geriye dönük girişte `--baslangic` / `--cikis` kullanılır.
+- `geciken-listesi`: planlanan bitiş/dönüş tarihi geçmiş açık kayıtlar.
+- Mevzuat (kontrol 2026-11-07, web aramasıyla; resmî metinle teyit edilmeli): yurt dışı gönderim 2863 s. Kanun md. 32
+  kapsamındadır; program izin/karar numarası ve sigorta değeri ister, süreyi sınırlar (tek ülke 1 yıl, birden çok
+  ülke 2 yıl). Yönetmelik 2020'de değişmiştir, güncel metin doğrulanmalıdır. Yurt içi ödünç ve restorasyon izin/usul
+  kuralları (Müzeler İç Hizmetler Yönetmeliği vb.) doğrulanamadığı için program bunlarda yalnızca kayıt tutar;
+  `--izin-no` serbest metindir. Sorumlu/kullanıcı personel adıdır (KVKK 6698), ziyaretçi verisi tutulmaz.
+- Test: `python3 -m unittest test_gecis test_takip -v`
+
 ## Masaüstü saati
 
 `python3 saat.py` — dijital saat (SS:DD), Efes hava durumu (Open-Meteo, 15 dk'da bir yenilenir) ve aylık takvim.

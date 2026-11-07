@@ -7,7 +7,7 @@ import sys
 from datetime import date
 
 import eklentiler
-from eklentiler import gecis
+from eklentiler import gecis, takip
 
 # Test/özel kurulum için EFES_MUZE_DB ortam değişkeniyle değiştirilebilir.
 DB = os.environ.get("EFES_MUZE_DB", "efes_muze.db")
@@ -90,7 +90,14 @@ def eser_listele(a):
 
 
 def eser_durum(a):
+    if a.durum == "restorasyonda":
+        sys.exit("Hata: restorasyon için 'restorasyon-baslat' komutunu kullanın (atölye, sorumlu, tarih kaydı).")
+    if a.durum == "odunc":
+        sys.exit("Hata: ödünç için 'odunc-ver' komutunu kullanın (kurum, dönüş tarihi kaydı).")
     with baglan() as con:
+        e = con.execute("SELECT id FROM eserler WHERE envanter_no=?", (a.no,)).fetchone()
+        if e and takip.acik_kayit(con, e["id"])[0]:
+            sys.exit("Hata: eserin açık restorasyon/ödünç kaydı var; 'restorasyon-bitir' veya 'odunc-iade' kullanın.")
         try:
             gecis.degistir(con, a.no, a.durum, kullanici=a.kullanici, aciklama=a.aciklama)
         except gecis.GecisHatasi as h:
