@@ -47,3 +47,10 @@ Test: `python3 -m unittest test_gecis -v`
 
 `python3 saat.py` — dijital saat (SS:DD), Efes hava durumu (Open-Meteo, 15 dk'da bir yenilenir) ve aylık takvim.
 Gerekli: `python3-tk` (Linux). Kapatmak için Esc.
+
+### Masaüstü kısayolu
+
+`efes_muze/kisayol/` klasöründen:
+- **Windows:** `Efes-Saat.bat` dosyasına sağ tık → Gönder → Masaüstü (kısayol oluştur). Python (tkinter dahil) kurulu olmalı.
+- **macOS:** `Efes-Saat.command` dosyasını Dock'a veya masaüstüne sürükleyin (ilk kez `chmod +x` gerekebilir).
+- **Linux:** `bash kisayol/linux-kisayol-kur.sh` masaüstüne ve uygulama menüsüne "Efes Saat" ekler.
