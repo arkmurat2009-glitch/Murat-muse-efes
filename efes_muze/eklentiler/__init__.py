@@ -3,10 +3,10 @@
   komutlar(sp)    -> argparse alt komutlarını ekler
   parametreler(p) -> mevcut alt komutlara ek bağımsız değişken ekler (ad -> parser sözlüğü verilir)
 """
-from . import dogrulama, gecis, hareketler
+from . import dogrulama, gecis, hareketler, takip
 
 # Sıra önemli: hareketler tablosu, geçiş kuralları kullanılmadan önce kurulmalı.
-EKLENTILER = [hareketler, dogrulama, gecis]
+EKLENTILER = [hareketler, dogrulama, gecis, takip]
 
 
 def sema_uygula(con):

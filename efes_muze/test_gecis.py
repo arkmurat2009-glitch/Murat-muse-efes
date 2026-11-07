@@ -108,6 +108,8 @@ class Gecis(unittest.TestCase):
             return subprocess.run([sys.executable, "muze.py", *arg], env=env, capture_output=True,
                                   text=True, cwd=os.path.dirname(os.path.abspath(__file__)))
         r = calistir("eser-durum", "E9", "odunc", "--kullanici", "ali")
+        self.assertNotEqual(r.returncode, 0)  # ödünç artık odunc-ver ile (kayıtlı) yapılır
+        r = calistir("odunc-ver", "E9", "Kurum", "--donus", "2099-01-01", "--kullanici", "ali")
         self.assertEqual(r.returncode, 0, r.stderr)
         r = calistir("eser-durum", "E9", "sergide")
         self.assertNotEqual(r.returncode, 0)
