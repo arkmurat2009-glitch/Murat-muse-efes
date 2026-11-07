@@ -81,7 +81,28 @@ python3 muze.py rapor        # iade ve net tutarı da gösterir
   girilmelidir. Ücretsiz giriş kategorileri (ör. 18 yaş ve altı, 65 yaş ve üstü T.C. vatandaşları) yönergeye göredir; güncel yaş/belge
   şartları teyit edilmelidir. Bilet iadesinin usulüne dair hüküm doğrulanamadı: program yalnızca gerekçeli kayıt tutar; tahsilat/iade
   işlemi kurumun Döner Sermaye ve muhasebe usullerine göre ayrıca yapılır. Yalnızca personel adı tutulur (KVKK 6698).
-- Test: `python3 -m unittest test_gecis test_takip test_tarife -v`
+- Test: `python3 -m unittest test_gecis test_takip test_tarife test_sayim -v`
+
+## Günlük sayım ve envanter mutabakatı
+
+```
+python3 muze.py sayim-baslat --yer "Salon A" --sorumlu "A. Yılmaz" --komisyon "A. Yılmaz, B. Kaya, C. Demir"   # veya --sergi AD / --tumu
+python3 muze.py sayim-isaretle 1 EF-001 EF-002 [--yer "Salon A"]     # sayımda bulunan eserler (birden çok numara)
+python3 muze.py sayim-rapor 1                                        # açıkken taslak tutanak
+python3 muze.py sayim-kapat 1                                        # kapatır ve mutabakat tutanağını yazar
+python3 muze.py sayim-listele
+```
+- Başlangıçta kapsamdaki eserlerin anlık görüntüsü alınır. Beklenen: `depoda`/`sergide` eserler. `odunc`/`restorasyonda` eserler
+  "dışarıda kayıtlı" sayılır, eksik yazılmaz.
+- Tutanak: **eksik** (kayıtta var, bulunamadı), **fazla/beklenmeyen** (kapsam dışı veya kayıtlı durumu bulunmaya uymayan),
+  **konum farkı** (`--yer` kayıtlıdan farklıysa), dışarıda kayıtlı. Kapanan sayım ve satırları değiştirilemez/silinemez.
+- Program eser kaydını düşmez ve durumunu değiştirmez; yalnızca fark tutanağı üretir.
+- Mevzuat (kontrol 2026-11-07, web aramasıyla ve yalnızca ikincil kaynaklarla; resmî metinle teyit edilmeli): Taşınır Mal
+  Yönetmeliği uygulamasında yıl sonu sayımı harcama yetkilisinin görevlendirdiği sayım komisyonunca yapılır; eksik için tutanak ve
+  kayıttan düşme teklifi, fazla için sayım fazlası fişi ve değer tespiti gerekir; müzeler Müze Yönetim Hesabı Cetveli düzenler.
+  Bu işlemler kurumun taşınır usullerine göre ayrıca yürütülür. Müzeler İç Hizmetler Yönetmeliği'nin sayım hükümleri ve sayım
+  sıklığı doğrulanamadı, program bunları varsaymaz. Komisyon üyeleri personel adıdır (KVKK 6698).
+- Test: `python3 -m unittest test_gecis test_takip test_tarife test_sayim -v`
 
 ## Masaüstü saati
 
