@@ -7,6 +7,7 @@ Veri kaynağı: Open-Meteo.com (CC BY 4.0).
 """
 import calendar
 import json
+import os
 import random
 import threading
 import tkinter as tk
@@ -40,7 +41,8 @@ HAVA_KODLARI = {
 
 ARKA, KART, YAZI, SOLUK, VURGU, HAFTA_SONU = "#0f172a", "#0b1220", "#f8fafc", "#cbd5e1", "#38bdf8", "#f87171"
 GEN, YUK = 400, 700
-TAS, TAS_GOLGE, TAS_KOYU, ISIK = "#e3d3ac", "#b09a6a", "#3b2f1f", "#fbbf24"
+ARKA_PLAN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "arka_plan.png")
+TAKVIM_Y = 478  # takvim panelinin üst kenarı (büstün yüzü üstte açık kalsın diye altta)
 
 
 def gokyuzu_ciz(c):
@@ -54,59 +56,6 @@ def gokyuzu_ciz(c):
     for _ in range(45):
         x, y = rnd.randint(0, GEN), rnd.randint(0, 330)
         c.create_oval(x, y, x + 2, y + 2, fill="#fef9c3", outline="")
-
-
-def sutun(c, x, ust, alt, w=8):
-    """Korint tarzı sütun: kaide, gövde (ışık/gölge), başlık."""
-    c.create_rectangle(x - w // 2 - 2, alt - 4, x + w // 2 + 2, alt, fill=TAS_GOLGE, outline="")
-    c.create_rectangle(x - w // 2, ust + 5, x + w // 2, alt - 4, fill=TAS, outline="")
-    c.create_rectangle(x + w // 2 - 3, ust + 5, x + w // 2, alt - 4, fill=TAS_GOLGE, outline="")
-    c.create_rectangle(x - w // 2 - 2, ust, x + w // 2 + 2, ust + 5, fill=TAS_GOLGE, outline="")
-
-
-def kapi(c, x0, x1, ust, alt, isikli=False):
-    c.create_rectangle(x0, ust, x1, alt, fill=ISIK if isikli else TAS_KOYU, outline=TAS_GOLGE, width=2)
-
-
-def celsus_ciz(c):
-    """Efes Celsus Kütüphanesi cephesi (basitleştirilmiş çizim): iki katlı, çift sütunlu, üçgen alınlıklı."""
-    zemin, x0, x1 = YUK - 30, 30, 370
-    c.create_rectangle(0, zemin, GEN, YUK, fill="#2a2113", outline="")             # zemin
-    for i in range(3):                                                              # merdiven
-        c.create_rectangle(x0 - 6 * (3 - i), zemin - 6 * (3 - i), x1 + 6 * (3 - i), zemin - 6 * (2 - i),
-                           fill=TAS_GOLGE if i % 2 else TAS, outline="")
-    alt_ust, alt_alt = zemin - 18 - 92, zemin - 18        # alt kat
-    ust_ust, ust_alt = alt_ust - 80, alt_ust              # üst kat
-    merkezler = (55, 145, 255, 345)
-    # duvar gövdeleri
-    c.create_rectangle(x0, alt_ust, x1, alt_alt, fill=TAS, outline="")
-    c.create_rectangle(x0 + 8, ust_ust, x1 - 8, ust_alt, fill=TAS, outline="")
-    # alt kat: 3 kapı (ortadaki büyük) + üstlerinde pencere, yanlarda nişler
-    kapi(c, 70, 130, alt_alt - 52, alt_alt)
-    kapi(c, 270, 330, alt_alt - 52, alt_alt)
-    kapi(c, 170, 230, alt_alt - 62, alt_alt)
-    for x in (70, 270, 170):
-        kapi(c, x + 12, x + 48, alt_ust + 8, alt_ust + 30, isikli=True)
-    for xa, xb in ((38, 52), (348, 362)):
-        c.create_arc(xa, alt_ust + 26, xb, alt_ust + 46, start=0, extent=180, fill=TAS_KOYU, outline="")
-        c.create_rectangle(xa, alt_ust + 36, xb, alt_alt - 8, fill=TAS_KOYU, outline="")
-    for cx in merkezler:                                   # çift sütunlar
-        sutun(c, cx - 7, alt_ust, alt_alt)
-        sutun(c, cx + 7, alt_ust, alt_alt)
-    c.create_rectangle(x0 - 4, alt_ust - 5, x1 + 4, alt_ust, fill=TAS_GOLGE, outline="")  # arşitrav
-    # üst kat: 3 pencere, üstlerinde üçgen alınlık; sütun çiftleri
-    for x in (100, 200, 300):
-        kapi(c, x - 18, x + 18, ust_ust + 26, ust_alt - 10, isikli=True)
-        c.create_polygon(x - 24, ust_ust + 26, x + 24, ust_ust + 26, x, ust_ust + 8,
-                         fill=TAS_GOLGE, outline=TAS)
-    for cx in merkezler:
-        sutun(c, cx - 6, ust_ust + 6, ust_alt - 2, w=7)
-        sutun(c, cx + 6, ust_ust + 6, ust_alt - 2, w=7)
-    # çatı silmesi ve ortada alınlık
-    c.create_rectangle(x0 + 2, ust_ust - 5, x1 - 2, ust_ust + 4, fill=TAS_GOLGE, outline="")
-    c.create_polygon(150, ust_ust - 5, 250, ust_ust - 5, 200, ust_ust - 30, fill=TAS, outline=TAS_GOLGE, width=2)
-    c.create_text(GEN // 2, zemin + 14, text="CELSUS KÜTÜPHANESİ · EFES", fill="#fde68a",
-                  font=("DejaVu Sans", 9, "bold"))
 
 
 def hava_al():
@@ -128,12 +77,15 @@ class Saat(tk.Tk):
 
         c = self.c = tk.Canvas(self, width=GEN, height=YUK, highlightthickness=0, bg=ARKA)
         c.pack()
-        gokyuzu_ciz(c)
-        celsus_ciz(c)
+        try:  # Marcus Aurelius büstü fotoğrafı (400x700 PNG, önceden hazırlanmış)
+            self._arka = tk.PhotoImage(file=ARKA_PLAN)
+            c.create_image(0, 0, image=self._arka, anchor="nw")
+        except tk.TclError:  # dosya yoksa gökyüzü zeminiyle devam et
+            gokyuzu_ciz(c)
 
         # yarı saydam paneller (stipple): arkadaki kütüphane hafifçe görünür
         c.create_rectangle(20, 150, GEN - 20, 232, fill=KART, stipple="gray75", outline="")
-        c.create_rectangle(20, 246, GEN - 20, 462, fill=KART, stipple="gray75", outline="")
+        c.create_rectangle(20, TAKVIM_Y, GEN - 20, TAKVIM_Y + 216, fill=KART, stipple="gray75", outline="")
 
         self.t_saat = c.create_text(GEN // 2, 64, font=("DejaVu Sans Mono", 68, "bold"), fill=YAZI)
         self.t_tarih = c.create_text(GEN // 2, 128, font=("DejaVu Sans", 13), fill=SOLUK)
@@ -164,18 +116,18 @@ class Saat(tk.Tk):
     def _takvimi_ciz(self, simdi):
         c = self.c
         c.delete("takvim")
-        c.create_text(GEN // 2, 266, text=f"{AYLAR[simdi.month - 1]} {simdi.year}", tags="takvim",
+        c.create_text(GEN // 2, TAKVIM_Y + 20, text=f"{AYLAR[simdi.month - 1]} {simdi.year}", tags="takvim",
                       font=("DejaVu Sans", 13, "bold"), fill=YAZI)
         adim, sol = 51, 20 + 51 // 2 - 3
         for i, g in enumerate(GUN_KISA):
-            c.create_text(sol + i * adim, 290, text=g, tags="takvim", font=("DejaVu Sans", 10, "bold"),
+            c.create_text(sol + i * adim, TAKVIM_Y + 44, text=g, tags="takvim", font=("DejaVu Sans", 10, "bold"),
                           fill=HAFTA_SONU if i >= 5 else SOLUK)
         for r, hafta in enumerate(calendar.Calendar(firstweekday=0).monthdayscalendar(
                 simdi.year, simdi.month)):
             for k, gun in enumerate(hafta):
                 if gun == 0:
                     continue
-                x, y, bugun = sol + k * adim, 316 + r * 24, gun == simdi.day
+                x, y, bugun = sol + k * adim, TAKVIM_Y + 70 + r * 24, gun == simdi.day
                 if bugun:  # bugün vurgulu, hafta sonları kırmızı
                     c.create_oval(x - 13, y - 11, x + 13, y + 11, fill=VURGU, outline="", tags="takvim")
                 c.create_text(x, y, text=str(gun), tags="takvim",
